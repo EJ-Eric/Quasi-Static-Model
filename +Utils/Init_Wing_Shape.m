@@ -1,17 +1,20 @@
-function Shape = Init_Wing_Shape(Shape,Wing_x_data,Wing_y_data,Wing_z_data)
+function Shape = Init_Wing_Shape(Wing_x_data,Wing_y_data,Wing_z_data)
+
+% first, remove any duplicate points 
+% duplicate points can cause issues with calculating geometric properties
+points = [Wing_x_data',Wing_y_data',Wing_z_data'];
+[~,unique_indices,~] = unique(points,"first","rows");
+unique_indices = sort(unique_indices);
+points = points(unique_indices,:);
 
 % assign coordinate data
-Shape.Wing_x = Wing_x_data;
-Shape.Wing_y = Wing_y_data;
-Shape.Wing_z = Wing_z_data;
+Shape.points = points;
 
-% assign root
-Shape.Wing_root_index = find(Wing_x_data == min(Wing_x_data));
-Shape.Wing_root = [...
-    Wing_x_data(Shape.Wing_root_index),...
-    Wing_y_data(Shape.Wing_root_index)];
+% find wing root, the point with the smallest x-value
+Shape.root_index = find(points(:,1) == min(points(:,1)));
+Shape.root = points(Shape.root_index);
 
-% assign wing tip
+% find wing tip, the point with the highest x-value
 Min_1 = find(Wing_x_data == max(Wing_x_data),1,"first");
 Min_2 = find(Wing_x_data == max(Wing_x_data),1,"last");   
 if Min_1 ~= Min_2
